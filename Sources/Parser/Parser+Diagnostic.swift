@@ -24,13 +24,9 @@ extension Parser {
     return ParserStopper()
   }
 
-  func _raiseError(_ kind: ParserErrorKind) throws {
-    return ParserStopper()
-  }
+  func _raiseError(_ kind: ParserErrorKind) {}
 
-  func _raiseWarning(_ kind: ParserErrorKind) throws {
-    return ParserStopper()    
-  }
+  func _raiseWarning(_ kind: ParserErrorKind) {}
 }
 
 public enum ParserErrorKind : DiagnosticKind {
