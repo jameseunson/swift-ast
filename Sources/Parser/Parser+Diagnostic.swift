@@ -16,21 +16,20 @@
 
 import Diagnostic
 
+public struct ParserStopper : Error { // TODO: need a better way to stop the parser
+}
+
 extension Parser {
   func _raiseFatal(_ kind: ParserErrorKind) -> Error {
-    return _diagnosticPool.appendFatal(kind: kind, sourceLocatable: _lexer.look())
+    return ParserStopper()
   }
 
   func _raiseError(_ kind: ParserErrorKind) throws {
-    try _diagnosticPool.appendError(kind: kind, sourceLocatable: _lexer.look())
+    return ParserStopper()
   }
 
   func _raiseWarning(_ kind: ParserErrorKind) throws {
-    try _diagnosticPool.appendWarning(kind: kind, sourceLocatable: _lexer.look())
-  }
-
-  var _diagnosticPool: DiagnosticPool {
-    return .shared
+    return ParserStopper()    
   }
 }
 

@@ -117,7 +117,6 @@ extension Parser {
 
   func parseGenericArgumentClause() -> GenericArgumentClause? {
     let openChevronCp = _lexer.checkPoint()
-    let openChevronDiagnosticCp = _diagnosticPool.checkPoint()
 
     let startLocation = getStartLocation()
     guard _matchLeftChevron() else {
@@ -131,7 +130,6 @@ extension Parser {
         types.append(type)
       } catch {
         _lexer.restore(fromCheckpoint: openChevronCp)
-        _diagnosticPool.restore(fromCheckpoint: openChevronDiagnosticCp)
         return nil
       }
     } while _lexer.match(.comma)
@@ -139,7 +137,6 @@ extension Parser {
     let endLocation = getEndLocation()
     guard _matchRightChevron() else {
       _lexer.restore(fromCheckpoint: openChevronCp)
-      _diagnosticPool.restore(fromCheckpoint: openChevronDiagnosticCp)
       return nil
     }
 

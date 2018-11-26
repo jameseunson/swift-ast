@@ -365,12 +365,10 @@ extension Parser {
   ) throws -> PostfixExpression { // swift-lint:suppress(nested_code_block_depth)
     func parseArgumentExpr(op: Operator) -> Expression? {
       let exprLexerCp = _lexer.checkPoint()
-      let exprDiagnosticCp = _diagnosticPool.checkPoint()
       do {
         return try parseExpression()
       } catch {
         _lexer.restore(fromCheckpoint: exprLexerCp)
-        _diagnosticPool.restore(fromCheckpoint: exprDiagnosticCp)
         return nil
       }
     }
@@ -997,7 +995,6 @@ extension Parser {
     }
 
     let memberIdCp = _lexer.checkPoint()
-    let memberIdDiagnosticCp = _diagnosticPool.checkPoint()
     switch _lexer.read([.dummyIdentifier, .self]) {
     case .identifier(let selfMemberId, false):
       if let (argNames, endLocation) = parseArgumentNamesAndRightParen() {
@@ -1007,7 +1004,6 @@ extension Parser {
       }
 
       _lexer.restore(fromCheckpoint: memberIdCp)
-      _diagnosticPool.restore(fromCheckpoint: memberIdDiagnosticCp)
     case .self:
       do {
         let selfExpr = try parseSelfExpression(startRange: .EMPTY)
@@ -1020,10 +1016,8 @@ extension Parser {
         }
 
         _lexer.restore(fromCheckpoint: memberIdCp)
-        _diagnosticPool.restore(fromCheckpoint: memberIdDiagnosticCp)
       } catch {
         _lexer.restore(fromCheckpoint: memberIdCp)
-        _diagnosticPool.restore(fromCheckpoint: memberIdDiagnosticCp)
       }
     default:
       break
@@ -1314,14 +1308,12 @@ extension Parser {
     }
 
     let signatureOpeningCp = _lexer.checkPoint()
-    let signatureOpeningDiagnosticCp = _diagnosticPool.checkPoint()
     var signature: ClosureExpression.Signature?
     if _lexer.match(.leftSquare) {
       if let captureList = parseCaptureList() {
         signature = ClosureExpression.Signature(captureList: captureList)
       } else {
         _lexer.restore(fromCheckpoint: signatureOpeningCp)
-        _diagnosticPool.restore(fromCheckpoint: signatureOpeningDiagnosticCp)
       }
     }
 
@@ -1331,7 +1323,6 @@ extension Parser {
         parameterClause = ClosureExpression.Signature.ParameterClause.parameterList(params)
       } else {
         _lexer.restore(fromCheckpoint: signatureOpeningCp)
-        _diagnosticPool.restore(fromCheckpoint: signatureOpeningDiagnosticCp)
       }
     }
 
@@ -1363,7 +1354,6 @@ extension Parser {
 
     if signature != nil, !_lexer.match(.in) {
       _lexer.restore(fromCheckpoint: signatureOpeningCp)
-      _diagnosticPool.restore(fromCheckpoint: signatureOpeningDiagnosticCp)
       signature = nil
     }
 
